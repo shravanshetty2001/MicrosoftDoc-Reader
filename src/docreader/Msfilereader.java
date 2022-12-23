@@ -21,7 +21,7 @@ public class Msfilereader {
 
 	         // find number of words in the document
 	         long count = Arrays.stream(docText.split("\\s+")).count();
-	         System.out.println("Total words: " + count);
+	         //System.out.println("Total words: " + count);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
