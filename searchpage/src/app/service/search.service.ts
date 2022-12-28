@@ -1,17 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SearchDto } from '../class/search-dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
-  private baseUrl='http://localhost:8085/DocList';
+  private baseUrl='http://localhost:9090/search';
   constructor(private http:HttpClient) { }
-  public SearchDoc(search:SearchDto):Observable<SearchDto>
+  public SearchDoc(search:any):Observable<any>
   {
-    return this.http.post<SearchDto>(this.baseUrl,search);
+    return this.http.get(`${this.baseUrl +'?query='+ search.kword + '&type='+ search.type}`,search);
   }
-  
 }

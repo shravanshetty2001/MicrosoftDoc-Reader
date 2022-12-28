@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SearchDto } from './class/search-dto';
 import { SearchService } from './service/search.service';
 import { FormGroup,FormControl, FormBuilder } from '@angular/forms';
+import { ListdownComponent } from './listdown/listdown.component';
+import { PassserviceService } from './service/passservice.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,14 +13,19 @@ import { FormGroup,FormControl, FormBuilder } from '@angular/forms';
 
 export class AppComponent implements OnInit{
   title = 'searchpage';
-  sd: SearchDto[] = [];
+  //sd: SearchDto[] = [];
+  matchedFiles: any;
   searchForm: FormGroup;
-  sdto: SearchDto= new SearchDto();
+ // sdto: SearchDto= new SearchDto();
+ @Output() msgToSibling = new EventEmitter<any>();
+  
   constructor
   (
    private route:Router,
    private formBuilder:FormBuilder,
-   private service: SearchService
+   private service: SearchService,
+   private passService: PassserviceService
+   //private listDownComponent: ListdownComponent 
   ){}
   ngOnInit(): void {
     this.searchForm = this.formBuilder.group({
@@ -27,18 +34,26 @@ export class AppComponent implements OnInit{
     })};
   onSubmit()
   {
-    this.sdto.kword=String((<HTMLInputElement>document.getElementById("sp")).value);
-    console.log(1);
-    console.log(this.sdto.kword);
-    this.service.SearchDoc(this.sdto).subscribe(
+    let toSearch = {
+      query: this.searchForm.value.stext,
+      type: "none"
+    };
+    // console.log(1);
+    // console.log(this.sdto.kword);
+    this.service.SearchDoc(toSearch).subscribe(
       (data) => {
         console.log(data);
+        this.matchedFiles=data;
         this.redirect();
       }
-    
     )
   }
+  moveToSib() {
+    this.msgToSibling.emit(this.matchedFiles);
+  }
   redirect() {
-    this.route.navigate(['/data']);;
+    this.passService.invokeEvent.next(this.matchedFiles);
+    this.route.navigate(['/data']);
+    this.moveToSib();
   }
 }
